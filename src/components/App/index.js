@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 import Navigation from "../Navigation";
 import LandingPage from "../Landing";
@@ -20,20 +20,32 @@ const theme = {
 	globalBg: "#FBFAFC",
 };
 
+const SkipNavLink = () => (
+	<div>
+		<Link to="#main-content">Skip to main content</Link>
+	</div>
+);
+
 const App = () => (
 	<ThemeProvider theme={theme}>
 		<Router>
 			<>
-				<Navigation />
+				<SkipNavLink />
+				<nav>
+					<Navigation />
+				</nav>
+				<header>Hello I'm the header</header>
 				<hr />
-
-				<Route exact path={ROUTES.LANDING} component={LandingPage} />
-				<Route path={ROUTES.SIGN_UP} component={SignUpPage} />
-				<Route path={ROUTES.SIGN_IN} component={SignInPage} />
-				<Route path={ROUTES.PASSWORD_FORGET} component={PasswordForgetPage} />
-				<Route path={ROUTES.HOME} component={HomePage} />
-				<Route path={ROUTES.ACCOUNT} component={AccountPage} />
-				<Route path={ROUTES.ADMIN} component={AdminPage} />
+				<main id="main-content" role="main">
+					<Route exact path={ROUTES.LANDING} component={LandingPage} />
+					<Route path={ROUTES.SIGN_UP} component={SignUpPage} />
+					<Route path={ROUTES.SIGN_IN} component={SignInPage} />
+					<Route path={ROUTES.PASSWORD_FORGET} component={PasswordForgetPage} />
+					<Route path={ROUTES.HOME} component={HomePage} />
+					<Route path={ROUTES.ACCOUNT} component={AccountPage} />
+					<Route path={ROUTES.ADMIN} component={AdminPage} />
+				</main>
+				<footer>Hey there, I'm the footer</footer>
 			</>
 		</Router>
 	</ThemeProvider>
