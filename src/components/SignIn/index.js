@@ -11,6 +11,7 @@ const SignInPage = () => (
 	<>
 		<h1>SignIn</h1>
 		<SignInForm />
+		<SignInGoogle />
 		<PasswordForgetLink />
 		<SignUpLink />
 	</>
@@ -71,10 +72,68 @@ class SignInFormBase extends Component {
 	}
 }
 
+class SignInGoogleBase extends Component {
+	constructor(props) {
+		super(props);
+
+		this.state = { error: null };
+	}
+
+	onSubmit = event => {
+		this.props.firebase
+			.doSignInWithGoogle()
+			.then(socialAuthUser => {
+				// create a user in Firebase DB as well
+				return this.props.firebase.user(socialAuthUser.user.uid).set({
+					username: socialAuthUser.user.displayName,
+					email: socialAuthUser.user.email,
+					roles: [],
+				});
+			})
+			.then(() => {
+				this.setState({ errro: null });
+				this.props.history.push(ROUTES.HOME);
+			})
+			.catch(error => {
+				if (error.code === ERROR_CODE_ACCOUNT_EXISTS) {
+					error.message = ERROR_MSG_ACCOUNT_EXISTS;
+				}
+				this.setState({ error });
+			});
+
+		event.preventDefault();
+	};
+
+	render() {
+		const { error } = this.state;
+
+		return (
+			<form onSubmit={this.onSubmit}>
+				<button type="submit">Sign In With Google</button>
+
+				{error && <p>{error.message}</p>}
+			</form>
+		);
+	}
+}
+
+const ERROR_CODE_ACCOUNT_EXISTS = "auth/account-exists-with-different-credential";
+const ERROR_MSG_ACCOUNT_EXISTS = `
+  An account with an E-Mail address to
+  this social account already exists. Try to login from
+  this account instead and associate your social accounts on
+  your personal account page.
+`;
+
 const SignInForm = compose(
 	withRouter,
 	withFirebase
 )(SignInFormBase);
+
+const SignInGoogle = compose(
+	withRouter,
+	withFirebase
+)(SignInGoogleBase);
 
 export default SignInPage;
 

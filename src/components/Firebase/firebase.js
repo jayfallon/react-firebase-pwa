@@ -15,8 +15,11 @@ class Firebase {
 	constructor() {
 		app.initializeApp(config);
 
+		this.emailAuthProvider = app.auth.EmailAuthProvider;
 		this.auth = app.auth();
 		this.db = app.database();
+
+		this.googleProvider = new app.auth.GoogleAuthProvider();
 	}
 
 	//*** Auth API ***
@@ -24,6 +27,8 @@ class Firebase {
 	doCreateUserWithEmailAndPassword = (email, password) => this.auth.createUserWithEmailAndPassword(email, password);
 
 	doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password);
+
+	doSignInWithGoogle = () => this.auth.signInWithPopup(this.googleProvider);
 
 	doSignOut = () => this.auth.signOut();
 
@@ -65,6 +70,12 @@ class Firebase {
 	user = uid => this.db.ref(`users/${uid}`);
 
 	users = () => this.db.ref("users");
+
+	//*** Message API */
+
+	message = uid => this.db.ref(`messages/${uid}`);
+
+	messages = () => this.db.ref("messages");
 }
 
 export default Firebase;
