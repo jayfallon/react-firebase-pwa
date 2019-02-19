@@ -60,7 +60,6 @@ class PasswordChangeForm extends Component {
 				</button>
 
 				{error && <p>{error.message}</p>}
-				{!error && <p>Hi Jay!</p>}
 			</form>
 		);
 	}
