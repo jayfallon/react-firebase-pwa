@@ -4,14 +4,35 @@ import { compose } from "recompose";
 import { AuthUserContext, withAuthorization, withEmailVerification } from "../Session";
 import { withFirebase } from "../Firebase";
 
-const HomePage = () => (
-	<>
-		<h1>Home</h1>
-		<p>the home page is accessible by every single signed in user</p>
+class HomePage extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			users: [],
+		};
+	}
+	componentDidMount() {
+		this.props.firebase.users().on("value", snapshot => {
+			this.setState({
+				users: snapshot.val(),
+			});
+		});
+	}
+	componentWillUnmount() {
+		this.props.firebase.users().off();
+	}
 
-		<Messages />
-	</>
-);
+	render() {
+		return (
+			<>
+				<h1>Home</h1>
+				<p>the home page is accessible by every single signed in user</p>
+
+				<Messages users={this.state.users} />
+			</>
+		);
+	}
+}
 
 class MessagesBase extends Component {
 	constructor(props) {
@@ -87,6 +108,7 @@ class MessagesBase extends Component {
 	};
 
 	render() {
+		const { users } = this.props;
 		const { text, messages, loading } = this.state;
 
 		return (
@@ -99,15 +121,18 @@ class MessagesBase extends Component {
 							</button>
 						)}
 
-						{messages ? (
+						{messages && (
 							<MessageList
-								messages={messages}
-								onRemoveMessage={this.onRemoveMessage}
+								messages={messages.map(message => ({
+									...message,
+									user: users ? users[message.userId] : { userId: message.userId },
+								}))}
 								onEditMessage={this.onEditMessage}
+								onRemoveMessage={this.onRemoveMessage}
 							/>
-						) : (
-							<div>There are no messages...</div>
 						)}
+
+						{!messages && <div>There are no messages ...</div>}
 
 						<form onSubmit={event => this.onCreateMessage(event, authUser)}>
 							<input type="text" value={text} onChange={this.onChangeText} />
@@ -136,6 +161,7 @@ const MessageList = ({ messages, onEditMessage, onRemoveMessage }) => (
 class MessageItem extends Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
 			editMode: false,
 			editText: this.props.message.text,
@@ -162,15 +188,14 @@ class MessageItem extends Component {
 	render() {
 		const { message, onRemoveMessage } = this.props;
 		const { editMode, editText } = this.state;
-
 		return (
 			<li>
 				{editMode ? (
 					<input type="text" value={editText} onChange={this.onChangeEditText} />
 				) : (
 					<span>
-						<strong>{message.userId}</strong> {message.text}
-						{message.editedAt && <span>(Edited)</span>}
+						<strong>{message.email || message.userId}</strong>
+						{message.text} {message.editedAt && <span>(Edited)</span>}
 					</span>
 				)}
 
@@ -182,7 +207,6 @@ class MessageItem extends Component {
 				) : (
 					<button onClick={this.onToggleEditMode}>Edit</button>
 				)}
-
 				{!editMode && (
 					<button type="button" onClick={() => onRemoveMessage(message.uid)}>
 						Delete
@@ -198,6 +222,7 @@ const Messages = withFirebase(MessagesBase);
 const condition = authUser => !!authUser;
 
 export default compose(
+	withFirebase,
 	withEmailVerification,
 	withAuthorization(condition)
 )(HomePage);
