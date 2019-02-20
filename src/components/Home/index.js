@@ -1,6 +1,7 @@
 import React, { Component } from "react";
+import { compose } from "recompose";
 
-import { withAuthorization } from "../Session";
+import { withAuthorization, withEmailVerification } from "../Session";
 import { withFirebase } from "../Firebase";
 
 const HomePage = () => (
@@ -96,4 +97,7 @@ const Messages = withFirebase(MessagesBase);
 
 const condition = authUser => !!authUser;
 
-export default withAuthorization(condition)(HomePage);
+export default compose(
+	withEmailVerification,
+	withAuthorization(condition)
+)(HomePage);
