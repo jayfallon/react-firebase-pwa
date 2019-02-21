@@ -76,6 +76,7 @@ class SignUpFormBase extends Component {
 		const isInvalid = passwordOne !== passwordTwo || passwordOne === "" || email === "" || username === "";
 		return (
 			<form onSubmit={this.onSubmit}>
+				<label htmlFor="username">Username:</label>
 				<input name="username" value={username} onChange={this.onChange} type="text" placeholder="Full Name" />
 				<input
 					name="email"
@@ -84,6 +85,7 @@ class SignUpFormBase extends Component {
 					type="text"
 					placeholder="Email Address"
 				/>{" "}
+				<label htmlFor="passwordOne">Password</label>
 				<input
 					name="passwordOne"
 					value={passwordOne}
@@ -91,6 +93,7 @@ class SignUpFormBase extends Component {
 					type="password"
 					placeholder="Password"
 				/>{" "}
+				<label htmlFor="passwordTwo">Password Confirm</label>
 				<input
 					name="passwordTwo"
 					value={passwordTwo}

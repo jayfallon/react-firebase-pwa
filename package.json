@@ -19,7 +19,8 @@
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
 		"deploy": "now && now alias",
-		"now-build": "react-scripts build"
+		"now-build": "react-scripts build",
+		"firebase": "react-scripts build && firebase deploy"
 	},
 	"eslintConfig": {
 		"extends": "react-app"
