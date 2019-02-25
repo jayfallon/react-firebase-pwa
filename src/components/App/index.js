@@ -2,6 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Helmet from "react-helmet";
 
+import LogRocket from "logrocket";
+
 import Navigation from "../Navigation";
 import LandingPage from "../Landing";
 import SignUpPage from "../SignUp";
@@ -22,6 +24,7 @@ const title = "Jay Fallon PWA Test";
 const url = `https://jayfallon.net`;
 const thumbnail = `%PUBLIC_URL%/graphics/thumbnail.png`;
 
+LogRocket.init("5c8qjy/jayfallon-capstone");
 const theme = {
 	globalBg: "#FBFAFC",
 };
